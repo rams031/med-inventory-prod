@@ -37,12 +37,12 @@ const AccountRouter = require("./routes/accounts");
 const CategoryRouter = require("./routes/category");
 const MedicineRouter = require("./routes/medicine");
 const ActivityRouter = require("./routes/activity");
-// const BarangayRouter = require("./routes/barangay");
+const BarangayRouter = require("./routes/barangay");
 
 app.use("/category/", CategoryRouter);
 app.use("/medicine/", MedicineRouter);
 app.use("/account/", AccountRouter);
 app.use("/activity/", AccountRouter);
-// app.use("/barangay/", BarangayRouter);
+app.use("/barangay/", BarangayRouter);
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));

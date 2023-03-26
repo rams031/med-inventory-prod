@@ -1,9 +1,14 @@
 const router = require("express").Router();
 const { connection } = require("./../db/connection");
 
-router.get("/", (req, res) => {
-  connection.query(
-    "SELECT * FROM `categories`",
+router.get("/:id", (req, res) => {
+  const { id } = req.params || {};
+
+  return connection.query(
+    {
+      sql: "SELECT * FROM `categories` WHERE barangayId = ?",
+      values: [id],
+    },
     function (error, results, fields) {
       if (error) return res.send(error);
       return res.status(200).json(results);
@@ -12,12 +17,12 @@ router.get("/", (req, res) => {
 });
 
 router.post("/create", (req, res) => {
-  const { categoryName } = req?.body || {};
+  const { categoryName, barangayId } = req?.body || {};
 
   return connection.query(
     {
-      sql: "INSERT INTO `categories`(`name`) VALUES (?)",
-      values: [categoryName],
+      sql: "INSERT INTO `categories`(`name`, `barangayId`) VALUES (?,?)",
+      values: [categoryName, barangayId],
     },
     function (error, results, fields) {
       if (error) return res.send(error);
