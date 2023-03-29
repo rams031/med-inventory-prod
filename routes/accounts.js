@@ -1,16 +1,15 @@
 const router = require("express").Router();
+const { client, inspectCache } = require("../db/redis");
 const { connection } = require("./../db/connection");
 
 router.get("/", (req, res) => {
-  return connection.query(
-    {
-      sql: "SELECT accounts.*,barangay.barangayName, barangay.barangayLogo  FROM accounts INNER JOIN barangay ON accounts.barangayId=barangay.id",
-    },
-    function (error, results, fields) {
-      if (error) return res.status(400).send(error);
-      res.status(200).json(results);
-    }
-  );
+  const query =
+    "SELECT accounts.*,barangay.barangayName, barangay.barangayLogo  FROM accounts INNER JOIN barangay ON accounts.barangayId=barangay.id";
+
+  return inspectCache(query).then(({ error, results }) => {
+    if (error) return res.status(400).send(error);
+    res.status(200).json(results);
+  });
 });
 
 router.get("/:id", (req, res) => {
@@ -71,6 +70,7 @@ router.post("/create", (req, res) => {
     function (error, results, fields) {
       if (error) return res.status(400).send(error);
       res.status(200).json(results);
+      return client.flushAll();
     }
   );
 });

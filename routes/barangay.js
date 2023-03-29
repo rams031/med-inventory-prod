@@ -1,31 +1,24 @@
 const router = require("express").Router();
+const { client, inspectCache } = require("../db/redis");
 const { connection } = require("./../db/connection");
 
 router.get("/", (req, res) => {
-  return connection.query(
-    {
-      sql: "SELECT * FROM `barangay`",
-    },
-    function (error, results, fields) {
-      if (error) return res.status(400).send(error);
-      res.status(200).json(results);
-    }
-  );
+  const query = "SELECT * FROM `barangay`";
+
+  return inspectCache(query).then(({ error, results }) => {
+    if (error) return res.status(400).send(error);
+    res.status(200).json(results);
+  });
 });
 
 router.get("/:id", (req, res) => {
   const { id } = req.params || {};
+  const query = `SELECT * FROM 'barangay' WHERE id=${id}`;
 
-  return connection.query(
-    {
-      sql: "SELECT * FROM `barangay` WHERE id=?",
-      values: [id],
-    },
-    function (error, results, fields) {
-      if (error) return res.status(400).send(error);
-      res.status(200).json(results);
-    }
-  );
+  return inspectCache(query).then(({ error, results }) => {
+    if (error) return res.status(400).send(error);
+    res.status(200).json(results);
+  });
 });
 
 router.post("/create", (req, res) => {
@@ -45,6 +38,7 @@ router.post("/create", (req, res) => {
     function (error, results, fields) {
       if (error) return res.status(400).send(error);
       res.status(200).json(results);
+      return client.flushAll();
     }
   );
 });
