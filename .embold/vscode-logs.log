@@ -249,3 +249,19 @@
 2023-03-20 16:13:17 error: SQLITE_ERROR: no such table: issues
 2023-03-20 16:13:29 info: file:///c%3A/Users/Xypher%20Solutions%20Inc/Desktop/medical-inventory-service/.git/index.lock
 2023-03-20 16:13:29 error: SQLITE_ERROR: no such table: issues
+2023-03-29 13:16:17 info: tempDirectory:c:\Users\Xypher Solutions Inc\.vscode\extensions\embold-vscode.embold-0.1.4\temp
+2023-03-29 13:16:17 info: Extraction complete for source: c:\Users\Xypher Solutions Inc\.vscode\extensions\embold-vscode.embold-0.1.4\resources\embold-scanner-archive.zip, destination: c:\Users\Xypher Solutions Inc\.vscode\extensions\embold-vscode.embold-0.1.4\temp
+2023-03-29 13:16:17 info: Congratulations, your extension "Embold" is now active!
+2023-03-29 15:40:31 info: file:///c%3A/Users/Xypher%20Solutions%20Inc/Desktop/medinventoryprod/med-inventory-prod/node_modules/esprima
+2023-03-29 15:40:31 error: SQLITE_ERROR: no such table: issues
+2023-03-29 15:40:32 info: file:///c%3A/Users/Xypher%20Solutions%20Inc/Desktop/medinventoryprod/med-inventory-prod/node_modules/.safe-buffer-ZVZFXzmR
+2023-03-29 15:40:32 error: SQLITE_ERROR: no such table: issues
+2023-03-29 15:40:32 info: file:///c%3A/Users/Xypher%20Solutions%20Inc/Desktop/medinventoryprod/med-inventory-prod/node_modules/.mime-ZHkliYDF
+2023-03-29 15:40:32 info: file:///c%3A/Users/Xypher%20Solutions%20Inc/Desktop/medinventoryprod/med-inventory-prod/node_modules/.esprima-JbRFvYCP
+2023-03-29 15:40:32 info: file:///c%3A/Users/Xypher%20Solutions%20Inc/Desktop/medinventoryprod/med-inventory-prod/node_modules/.js-yaml-nGCxAyh5
+2023-03-29 15:40:32 error: SQLITE_ERROR: no such table: issues
+2023-03-29 15:40:32 error: SQLITE_ERROR: no such table: issues
+2023-03-29 15:40:32 error: SQLITE_ERROR: no such table: issues
+2023-03-29 16:52:16 info: tempDirectory:c:\Users\Xypher Solutions Inc\.vscode\extensions\embold-vscode.embold-0.1.4\temp
+2023-03-29 16:52:16 info: Extraction complete for source: c:\Users\Xypher Solutions Inc\.vscode\extensions\embold-vscode.embold-0.1.4\resources\embold-scanner-archive.zip, destination: c:\Users\Xypher Solutions Inc\.vscode\extensions\embold-vscode.embold-0.1.4\temp
+2023-03-29 16:52:16 info: Congratulations, your extension "Embold" is now active!

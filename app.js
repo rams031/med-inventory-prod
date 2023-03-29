@@ -8,6 +8,22 @@ const { connection } = require("./db/connection");
 const port = process.env.PORT || 3001;
 const monitor = new cronitor.Monitor("Medical Inventory System");
 
+const { client } = require("./db/redis");
+
+(async () => {
+  await client.connect();
+  client.flushAll();
+})();
+
+client.on("error", (err) => console.log("Redis error " + err));
+client.on("connect", () => {
+  console.log("Redis Connected");
+});
+
+client.on("ready", () => {
+  console.log("Redis Ready");
+});
+
 monitor.ping({ state: "run" });
 monitor.ping({ state: "complete" });
 monitor.ping({ state: "fail" });

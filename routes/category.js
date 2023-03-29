@@ -1,19 +1,16 @@
 const router = require("express").Router();
+const { client, inspectCache } = require("../db/redis");
 const { connection } = require("./../db/connection");
 
 router.get("/:id", (req, res) => {
   const { id } = req.params || {};
+  const query = `SELECT * FROM 'categories' WHERE barangayId = ${id}`;
 
-  return connection.query(
-    {
-      sql: "SELECT * FROM `categories` WHERE barangayId = ?",
-      values: [id],
-    },
-    function (error, results, fields) {
-      if (error) return res.send(error);
-      return res.status(200).json(results);
-    }
-  );
+  return inspectCache(query).then(({ error, results }) => {
+    if (error) return res.status(400).send(error);
+    res.status(200).json(results);
+    return client.flushAll();
+  });
 });
 
 router.post("/create", (req, res) => {
@@ -26,7 +23,8 @@ router.post("/create", (req, res) => {
     },
     function (error, results, fields) {
       if (error) return res.send(error);
-      return res.status(200).json(results);
+      res.status(200).json(results);
+      return client.flushAll();
     }
   );
 });
@@ -42,7 +40,8 @@ router.post("/update", (req, res) => {
     function (error, results, fields) {
       console.log(`error:`, error);
       if (error) return res.send(error);
-      return res.status(200).json(results);
+      res.status(200).json(results);
+      return client.flushAll();
     }
   );
 });
@@ -57,7 +56,8 @@ router.post("/delete", (req, res) => {
     },
     function (error, results, fields) {
       if (error) return res.send(error);
-      return res.status(200).json(results);
+      res.status(200).json(results);
+      return client.flushAll();
     }
   );
 });
