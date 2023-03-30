@@ -3,15 +3,15 @@ const redis = require("redis");
 const { connection } = require("./connection");
 
 const client = redis.createClient({
-  password: process.env.REDIS_PASSWORD,
-  socket: {
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-  },
+    password: 'MVpYGc4bW8654L6VS5PzuKpjrt5q3gJo',
+    socket: {
+        host: 'redis-16518.c14.us-east-1-2.ec2.cloud.redislabs.com',
+        port: 16518
+    }
 });
 
 const redisConfig = {
-  EX: 100, // Expiration
+  EX: 10, // Expiration
   NX: true, // Writable
 };
 
