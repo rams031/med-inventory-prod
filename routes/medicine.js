@@ -1,20 +1,18 @@
 const router = require("express").Router();
 const { connection } = require("./../db/connection");
+const { client, redisConfig, inspectCache } = require("./../db/redis");
 
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   const { id } = req.params || {};
+  const barangayKey = `medicines.barangayId = ${id}`;
+  const query =
+    "SELECT medicines.*, categories.name as categoryName FROM medicines INNER JOIN categories ON medicines.category_id=categories.id WHERE " +
+    barangayKey;
 
-  return connection.query(
-    {
-      sql: "SELECT medicines.*, categories.name as categoryName FROM medicines INNER JOIN categories ON medicines.category_id=categories.id WHERE medicines.barangayId = ?",
-      values: [id],
-    },
-
-    function (error, results, fields) {
-      if (error) return res.status(400).send(error);
-      res.status(200).json(results);
-    }
-  );
+  return inspectCache(query).then(({ error, results }) => {
+    if (error) return res.status(400).send(error);
+    res.status(200).json(results);
+  });
 });
 
 router.post("/create", (req, res) => {
@@ -48,6 +46,7 @@ router.post("/create", (req, res) => {
     function (error, results, fields) {
       if (error) return res.status(400).send(error);
       res.status(200).json(results);
+      return client.flushAll();
     }
   );
 });
@@ -84,6 +83,7 @@ router.post("/update", (req, res) => {
       console.log(`error:`, error);
       if (error) return res.status(400).send(error);
       res.status(200).json(results);
+      return client.flushAll();
     }
   );
 });
@@ -99,6 +99,7 @@ router.post("/delete", (req, res) => {
     function (error, results, fields) {
       if (error) return res.status(400).send(error);
       res.status(200).json(results);
+      return client.flushAll();
     }
   );
 });
@@ -113,8 +114,8 @@ router.post("/deduct", (req, res) => {
     },
     function (error, results, fields) {
       if (error) return res.status(400).send(error);
-      // if()
       res.status(200).json(results);
+      return client.flushAll();
     }
   );
 });
