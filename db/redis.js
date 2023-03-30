@@ -3,11 +3,15 @@ const redis = require("redis");
 const { connection } = require("./connection");
 
 const client = redis.createClient({
-  url: "rediss://red-cg9tsv02qv25khj58reg:Z6fZLlDIzaqupc6NdaE6QhGVKWg0pK7A@singapore-redis.render.com:6379",
+  password: process.env.REDIS_PASSWORD,
+  socket: {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+  },
 });
 
 const redisConfig = {
-  EX: 10, // Expiration
+  EX: 100, // Expiration
   NX: true, // Writable
 };
 
