@@ -6,6 +6,9 @@ router.get("/", (req, res) => {
   const query = "SELECT * FROM `barangay`";
 
   return inspectCache(query).then(({ error, results }) => {
+    console.log(`results:`, results);
+    console.log(`error:`, error);
+
     if (error) return res.status(400).send(error);
     res.status(200).json(results);
   });
@@ -13,7 +16,8 @@ router.get("/", (req, res) => {
 
 router.get("/:id", (req, res) => {
   const { id } = req.params || {};
-  const query = `SELECT * FROM 'barangay' WHERE id=${id}`;
+  const userKey = `id=${id}`;
+  const query = "SELECT * FROM `barangay` WHERE " + userKey;
 
   return inspectCache(query).then(({ error, results }) => {
     if (error) return res.status(400).send(error);

@@ -4,7 +4,8 @@ const { connection } = require("./../db/connection");
 
 router.get("/:id", (req, res) => {
   const { id } = req.params || {};
-  const query = `SELECT * FROM 'categories' WHERE barangayId = ${id}`;
+  const barangayKey = `barangayId = ${id}`;
+  const query = "SELECT * FROM `categories` WHERE " + barangayKey;
 
   return inspectCache(query).then(({ error, results }) => {
     if (error) return res.status(400).send(error);
