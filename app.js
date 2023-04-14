@@ -12,29 +12,23 @@ const { client } = require("./db/redis");
 
 (async () => {
   await client.connect();
-  client.flushAll();
+  client.flushDb();
 })();
 
 client.on("error", (err) => console.log("Redis error " + err));
-client.on("connect", () => {
-  console.log("Redis Connected");
-});
-
-client.on("ready", () => {
-  console.log("Redis Ready");
-});
+client.on("connect", () => console.log("Redis Connected"));
+client.on("ready", () => console.log("Redis Ready"));
 
 monitor.ping({ state: "run" });
 monitor.ping({ state: "complete" });
 monitor.ping({ state: "fail" });
 
-connection.on("acquire", (connection) => {
-  console.log("Open Connection %d  ", connection.threadId);
-});
-
-connection.on("release", (connection) => {
-  console.log("Close Connection %d released", connection.threadId);
-});
+connection.on("acquire", (connection) =>
+  console.log("Open Connection %d  ", connection.threadId)
+);
+connection.on("release", (connection) =>
+  console.log("Close Connection %d released", connection.threadId)
+);
 
 // Create Connection Action
 // connection.getConnection((err) => {
