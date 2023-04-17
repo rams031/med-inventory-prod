@@ -1,6 +1,8 @@
 require("dotenv").config();
 const crypto = require("crypto");
 const { createClient } = require("redis");
+var jwt = require("jsonwebtoken");
+
 const { connection } = require("./connection");
 
 const client = createClient({
@@ -17,19 +19,23 @@ const stringToHash = (data) =>
 
 const inspectCache = async (key, query) => {
   const queryHash = stringToHash(query);
-  const keyHash = key;
-  console.log("keyHash", key);
+  const keyHash = stringToHash(key);
   const redisCacheData = await client.hGet(keyHash, queryHash);
 
-  if (redisCacheData) return JSON.parse(redisCacheData);
+  if (redisCacheData) {
+    var decodedCache = jwt.verify(redisCacheData, "secret");
+    return decodedCache?.data;
+  }
 
   return new Promise((resolve) => {
     connection.query(query, async (error, results) => {
+      const encoded = jwt.sign({ data: { error, results } }, "secret");
+
       await client
         .hSet(
           keyHash,
           queryHash,
-          JSON.stringify({ error, results })
+          encoded
           // redisConfig
         )
         .then((res) => console.log("res", res));
@@ -39,7 +45,7 @@ const inspectCache = async (key, query) => {
 };
 
 const clearCache = (key) => {
-  const hashKey = key;
+  const hashKey = stringToHash(key);
   console.log(`hashKey key clear:`, hashKey);
   return client.del(hashKey).then((res) => console.log("res", res));
 };
