@@ -1,30 +1,26 @@
 const router = require("express").Router();
-const { client, inspectCache } = require("../db/redis");
+const { client, inspectCache, clearCache } = require("../db/redis");
 const { connection } = require("./../db/connection");
+const redisKey = "accounts";
 
 router.get("/", (req, res) => {
   const query =
     "SELECT accounts.*,barangay.barangayName, barangay.barangayLogo  FROM accounts INNER JOIN barangay ON accounts.barangayId=barangay.id";
 
-  return inspectCache(query).then(({ error, results }) => {
+  return inspectCache(redisKey, query).then(({ error, results }) => {
     if (error) return res.status(400).send(error);
-    res.status(200).json(results);
+    return res.status(200).json(results);
   });
 });
 
 router.get("/:id", (req, res) => {
   const { id } = req.params || {};
+  const query = `SELECT accounts.*,barangay.barangayName, barangay.barangayLogo  FROM accounts INNER JOIN barangay ON accounts.barangayId=barangay.id WHERE accounts.barangayId = ${id}`;
 
-  return connection.query(
-    {
-      sql: "SELECT accounts.*,barangay.barangayName, barangay.barangayLogo  FROM accounts INNER JOIN barangay ON accounts.barangayId=barangay.id WHERE accounts.barangayId = ?",
-      values: [id],
-    },
-    function (error, results, fields) {
-      if (error) return res.status(400).send(error);
-      res.status(200).json(results);
-    }
-  );
+  return inspectCache(redisKey, query).then(({ error, results }) => {
+    if (error) return res.status(400).send(error);
+    return res.status(200).json(results);
+  });
 });
 
 router.post("/login", (req, res) => {
@@ -70,7 +66,40 @@ router.post("/create", (req, res) => {
     function (error, results, fields) {
       if (error) return res.status(400).send(error);
       res.status(200).json(results);
-      return client.flushAll();
+      return clearCache(redisKey);
+    }
+  );
+});
+
+router.post("/update", (req, res) => {
+  const { id, fullname, barangayId, accountType, username, address, email } =
+    req?.body || {};
+
+  return connection.query(
+    {
+      sql: "UPDATE `accounts` SET `barangayId`=?,`accountType`=?,`fullname`=?,`email`=?,`address`=?,`username`=? WHERE id=?",
+      values: [barangayId, accountType, fullname, email, address, username, id],
+    },
+    function (error, results, fields) {
+      if (error) return res.status(400).send(error);
+      res.status(200).json(results);
+      return clearCache(redisKey);
+    }
+  );
+});
+
+router.post("/delete", (req, res) => {
+  const { categoryId } = req?.body || {};
+
+  return connection.query(
+    {
+      sql: "DELETE FROM `accounts` WHERE id=?",
+      values: [categoryId],
+    },
+    function (error, results, fields) {
+      if (error) return res.send(error);
+      res.status(200).json(results);
+      return clearCache(redisKey);
     }
   );
 });

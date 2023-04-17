@@ -1,6 +1,12 @@
 const router = require("express").Router();
 const { connection } = require("./../db/connection");
-const { client, redisConfig, inspectCache } = require("./../db/redis");
+const {
+  client,
+  redisConfig,
+  inspectCache,
+  clearCache,
+} = require("./../db/redis");
+const redisKey = "medicines";
 
 router.get("/:id", async (req, res) => {
   const { id } = req.params || {};
@@ -9,7 +15,7 @@ router.get("/:id", async (req, res) => {
     "SELECT medicines.*, categories.name as categoryName FROM medicines INNER JOIN categories ON medicines.category_id=categories.id WHERE " +
     barangayKey;
 
-  return inspectCache(query).then(({ error, results }) => {
+  return inspectCache(redisKey, query).then(({ error, results }) => {
     if (error) return res.status(400).send(error);
     res.status(200).json(results);
   });
@@ -46,7 +52,7 @@ router.post("/create", (req, res) => {
     function (error, results, fields) {
       if (error) return res.status(400).send(error);
       res.status(200).json(results);
-      return client.flushAll();
+      return clearCache(redisKey);
     }
   );
 });
@@ -83,7 +89,7 @@ router.post("/update", (req, res) => {
       console.log(`error:`, error);
       if (error) return res.status(400).send(error);
       res.status(200).json(results);
-      return client.flushAll();
+      return clearCache(redisKey);
     }
   );
 });
@@ -99,7 +105,7 @@ router.post("/delete", (req, res) => {
     function (error, results, fields) {
       if (error) return res.status(400).send(error);
       res.status(200).json(results);
-      return client.flushAll();
+      return clearCache(redisKey);
     }
   );
 });
@@ -115,7 +121,7 @@ router.post("/deduct", (req, res) => {
     function (error, results, fields) {
       if (error) return res.status(400).send(error);
       res.status(200).json(results);
-      return client.flushAll();
+      return clearCache(redisKey);
     }
   );
 });

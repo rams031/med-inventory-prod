@@ -1,16 +1,14 @@
 const router = require("express").Router();
-const { client, inspectCache } = require("../db/redis");
+const { client, inspectCache, clearCache } = require("../db/redis");
 const { connection } = require("./../db/connection");
+const redisKey = "barangay";
 
 router.get("/", (req, res) => {
   const query = "SELECT * FROM `barangay`";
 
-  return inspectCache(query).then(({ error, results }) => {
-    console.log(`results:`, results);
-    console.log(`error:`, error);
-
+  return inspectCache(redisKey, query).then(({ error, results }) => {
     if (error) return res.status(400).send(error);
-    res.status(200).json(results);
+    return res.status(200).json(results);
   });
 });
 
@@ -19,7 +17,7 @@ router.get("/:id", (req, res) => {
   const userKey = `id=${id}`;
   const query = "SELECT * FROM `barangay` WHERE " + userKey;
 
-  return inspectCache(query).then(({ error, results }) => {
+  return inspectCache(redisKey, query).then(({ error, results }) => {
     if (error) return res.status(400).send(error);
     res.status(200).json(results);
   });
@@ -42,7 +40,51 @@ router.post("/create", (req, res) => {
     function (error, results, fields) {
       if (error) return res.status(400).send(error);
       res.status(200).json(results);
-      return client.flushAll();
+      return clearCache(redisKey);
+    }
+  );
+});
+
+router.post("/update", (req, res) => {
+  const {
+    id,
+    barangayName,
+    barangayLogo,
+    barangayDescription,
+    barangayAddress,
+  } = req?.body || {};
+
+  return connection.query(
+    {
+      sql: "UPDATE `barangay` SET `barangayName`=?,`barangayLogo`=?,`barangayDescription`=?,`barangayAddress`=? WHERE `id`=?",
+      values: [
+        barangayName,
+        barangayLogo,
+        barangayDescription,
+        barangayAddress,
+        id,
+      ],
+    },
+    function (error, results, fields) {
+      if (error) return res.status(400).send(error);
+      res.status(200).json(results);
+      return clearCache(redisKey);
+    }
+  );
+});
+
+router.post("/delete", (req, res) => {
+  const { id } = req?.body || {};
+
+  return connection.query(
+    {
+      sql: "DELETE FROM `barangay` WHERE id=?",
+      values: [id],
+    },
+    function (error, results, fields) {
+      if (error) return res.send(error);
+      res.status(200).json(results);
+      return clearCache(redisKey);
     }
   );
 });
