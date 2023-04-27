@@ -8,6 +8,10 @@ const { connection } = require("./db/connection");
 const port = process.env.PORT || 3001;
 const monitor = new cronitor.Monitor("Medical Inventory System");
 
+process.on('uncaughtException', function (error) {
+  console.log(error.stack);
+});
+
 const { client } = require("./db/redis");
 
 (async () => {
